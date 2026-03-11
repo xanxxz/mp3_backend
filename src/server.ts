@@ -1,213 +1,257 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import fastifyJwt from '@fastify/jwt';
+import bcrypt from 'bcrypt';
 import { pool } from './db';
-import fastifyStatic from '@fastify/static';
-import path from 'path';
-import productData from '../mocks/products';
 
 const app = Fastify({ logger: true });
 
-app.register(cors, { origin: true });
-
-app.register(fastifyStatic, {
-  root: path.join(__dirname, '../public'), // папка public на одном уровне с src
-  prefix: '/images/', // URL для доступа к картинкам
+// CORS
+app.register(cors, {
+  origin: 'http://localhost:5173', // фронт
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // OPTIONS добавится автоматически
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, 
 });
 
-// --- БРЕНДЫ ---
-app.get('/brands', async () => {
-  const { rows } = await pool.query('SELECT * FROM brands ORDER BY name');
-  return rows;
+// JWT
+app.register(fastifyJwt, { secret: process.env.JWT_SECRET! });
+
+// --- Middleware для защищённых роутов ---
+app.decorate('authenticate', async (req: any, reply: any) => {
+  try {
+    await req.jwtVerify();
+  } catch {
+    reply.code(401).send({ message: 'Unauthorized' });
+  }
 });
 
-
-// --- КАТЕГОРИИ ---
-app.get('/categories', async () => {
-  const { rows } = await pool.query('SELECT * FROM categories ORDER BY id');
-  return rows;
-});
-
-
-// --- ВСЕ ПРОДУКТЫ С ФИЛЬТРАМИ ---
-app.get('/products', async (req, reply) => {
-  const { brand, category, subcategory } = req.query as {
-    brand?: string;
-    category?: string;
-    subcategory?: string;
+// --- РЕГИСТРАЦИЯ ---
+app.post('/register', async (req, reply) => {
+  const { email, phone, name, region, password } = req.body as {
+    email: string;
+    phone: string;
+    name: string;
+    region: string;
+    password: string;
   };
 
-  const values: any[] = [];
-  const where: string[] = [];
-
-  if (brand) {
-    const brandId = Number(brand);
-    if (!isNaN(brandId)) {
-      values.push(brandId);
-      where.push(`p.brand_id = $${values.length}::int`);
-    }
-  }
-
-  if (subcategory) {
-    const subcatId = Number(subcategory);
-    if (!isNaN(subcatId)) {
-      values.push(subcatId);
-      where.push(`p.subcategory_id = $${values.length}::int`);
-    }
-  }
-
-  if (category) {
-    const categoryId = Number(category);
-    if (!isNaN(categoryId)) {
-      values.push(categoryId);
-      where.push(`
-        p.subcategory_id IN (
-          SELECT id FROM categories WHERE parent_id = $${values.length}::int
-        )
-      `);
-    }
-  }
-
-  const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
-
-  const query = `
-    SELECT 
-      p.id,
-      p.name,
-      p.art,
-      p.description,
-      p.price,
-      p.brand_id AS "brandId",
-      p.subcategory_id AS "subcategoryId",
-      p.in_stock AS "inStock",
-      COALESCE(
-        JSON_AGG(pi.image_url ORDER BY pi.sort_order)
-        FILTER (WHERE pi.id IS NOT NULL),
-        '[]'
-      ) AS images
-    FROM products p
-    LEFT JOIN product_images pi ON pi.product_id = p.id
-    ${whereSql}
-    GROUP BY p.id
-    ORDER BY p.name
-  `;
-
   try {
-    const { rows } = await pool.query(query, values);
+    const hashed = await bcrypt.hash(password, 10);
+    const { rows } = await pool.query(
+      `INSERT INTO users (email, phone, name, region, password_hash)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id, email, name, region`,
+      [email, phone, name, region, hashed]
+    );
 
-    const productsWithUrls = rows.map((p) => {
-      const imgs: string[] = Array.isArray(p.images)
-        ? p.images
-        : JSON.parse(p.images || '[]');
-
-      return {
-        ...p,
-        images: imgs.map((img) =>
-          img.startsWith('/images/') ? img : `/images/${img}`
-        ),
-      };
-    });
-
-    return productsWithUrls;
-  } catch (err) {
+    return rows[0];
+  } catch (err: any) {
+    if (err.code === '23505') return reply.code(400).send({ message: 'Email уже используется' });
     app.log.error(err);
-    return reply.code(500).send({
-      statusCode: 500,
-      code: 'INTERNAL_ERROR',
-      message: 'Ошибка при получении продуктов',
-    });
+    return reply.code(500).send({ message: 'Ошибка регистрации' });
   }
 });
 
-// --- ОДИН ПРОДУКТ С КАРТИНКАМИ И ХАРАКТЕРИСТИКАМИ ---
-app.get('/products/:id', async (req, reply) => {
-  const { id } = req.params as { id: string };
+// --- АВТОРИЗАЦИЯ ---
+app.post('/login', async (req, reply) => {
+  const { email, password } = req.body as { email: string; password: string };
 
-  const query = `
-    SELECT 
-      p.id,
-      p.name,
-      p.art,
-      p.description,
-      p.price,
-      p.brand_id AS "brandId",
-      p.subcategory_id AS "subcategoryId",
-      p.in_stock AS "inStock",
-      COALESCE(
-        JSON_AGG(DISTINCT pi.image_url ORDER BY pi.sort_order)
-        FILTER (WHERE pi.id IS NOT NULL),
-        '[]'
-      ) AS images,
-      COALESCE(
-        JSON_AGG(DISTINCT jsonb_build_object('name', pc.name, 'value', pc.value))
-        FILTER (WHERE pc.id IS NOT NULL),
-        '[]'
-      ) AS characteristics
-    FROM products p
-    LEFT JOIN product_images pi ON pi.product_id = p.id
-    LEFT JOIN product_characteristics pc ON pc.product_id = p.id
-    WHERE p.id = $1
-    GROUP BY p.id
-  `;
+  const { rows } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+  const user = rows[0];
 
-  const { rows } = await pool.query(query, [id]);
+  if (!user) return reply.code(401).send({ message: 'Неверный email или пароль' });
 
-  if (!rows.length) return reply.code(404).send({ message: 'Product not found' });
+  const match = await bcrypt.compare(password, user.password_hash);
+  if (!match) return reply.code(401).send({ message: 'Неверный email или пароль' });
 
-  const product = rows[0];
-
-  product.images = product.images.map((img: string) =>
-    img.startsWith('/images/') ? img : `/images/${img}`
-  );
-
-  return product;
+  const token = app.jwt.sign({ userId: user.id });
+  return { token, user: { id: user.id, email: user.email, name: user.name, region: user.region } };
 });
 
-// --- КОРЗИНА (in-memory) ---
-interface CartItem {
+// --- СБРОС ПАРОЛЯ ---
+app.post('/reset-password', async (req, reply) => {
+  const { email } = req.body as { email: string };
+  const { rows } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+
+  if (!rows.length) return reply.code(404).send({ message: 'Пользователь не найден' });
+
+  const newPassword = Math.random().toString(36).slice(-10); // простой генератор
+  const hashed = await bcrypt.hash(newPassword, 10);
+
+  await pool.query('UPDATE users SET password_hash = $1 WHERE email = $2', [hashed, email]);
+
+  console.log(`Новый пароль для ${email}:`, newPassword); // для dev
+  return { message: 'Пароль сброшен, новый пароль отправлен на email' };
+});
+
+// --- ЗАЩИЩЁННЫЙ РОУТ (пример) ---
+app.get('/me', { preValidation: [(app as any).authenticate] }, async (req: any) => {
+  const { rows } = await pool.query(
+    'SELECT id, email, name, region FROM users WHERE id = $1',
+    [(req as any).user.userId]
+  );
+  return rows[0];
+});
+
+interface CartItemBody {
   productId: string;
-  quantity: number;
+  quantity?: number;
 }
 
-const cart: CartItem[] = [];
+// Получить корзину текущего пользователя
+// GET /cart
+// cart.ts
+app.get('/cart', { preValidation: [(app as any).authenticate] }, async (req: any, reply) => {
+  try {
+    const userId = req.user.userId;
+    const { rows } = await pool.query(
+      `SELECT product_id, quantity
+       FROM cart
+       WHERE user_id = $1`,
+      [userId]
+    );
 
-// Показать корзину
-app.get('/cart', async () => {
-  // возвращаем товары с полной информацией из productData
-  const fullCart = cart.map((item) => {
-    const product = productData.find((p) => p.id === item.productId);
-    if (!product) return null;
-    return { ...product, quantity: item.quantity };
-  }).filter(Boolean);
-
-  return fullCart;
+    return rows.map(r => ({
+      productId: r.product_id,
+      quantity: r.quantity,
+    }));
+  } catch (err) {
+    app.log.error(err);
+    return reply.code(500).send({ message: 'Ошибка получения корзины' });
+  }
 });
 
-// Добавить товар в корзину
-app.post('/cart', async (req, reply) => {
-  const { productId, quantity } = req.body as { productId: string; quantity?: number };
-  const qty = quantity ?? 1;
+// Добавить товар в корзину или увеличить количество
+app.post('/cart', { preValidation: [(app as any).authenticate] }, async (req: any, reply) => {
+  const userId = req.user.userId;
+  const { productId, quantity = 1 } = req.body as CartItemBody;
 
-  const product = productData.find((p) => p.id === productId);
-  if (!product) return reply.code(404).send({ message: 'Product not found' });
+  const existing = await pool.query(
+    'SELECT quantity FROM cart WHERE user_id = $1 AND product_id = $2',
+    [userId, productId]
+  );
 
-  const existing = cart.find((c) => c.productId === productId);
-  if (existing) {
-    existing.quantity += qty;
+  if (existing.rows.length) {
+    await pool.query(
+      'UPDATE cart SET quantity = quantity + $1 WHERE user_id = $2 AND product_id = $3',
+      [quantity, userId, productId]
+    );
   } else {
-    cart.push({ productId, quantity: qty });
+    await pool.query(
+      'INSERT INTO cart(user_id, product_id, quantity) VALUES($1, $2, $3)',
+      [userId, productId, quantity]
+    );
   }
 
-  return { message: 'Product added to cart', cart };
+  return reply.send({ message: 'Товар добавлен в корзину' });
+});
+
+// Изменить количество товара
+app.put('/cart/:productId', { preValidation: [(app as any).authenticate] }, async (req: any, reply) => {
+  const userId = req.user.userId;
+  const { productId } = req.params as { productId: string };
+  const { quantity } = req.body as { quantity: number };
+
+  if (quantity <= 0) {
+    await pool.query('DELETE FROM cart WHERE user_id = $1 AND product_id = $2', [userId, productId]);
+  } else {
+    await pool.query(
+      'UPDATE cart SET quantity = $1 WHERE user_id = $2 AND product_id = $3',
+      [quantity, userId, productId]
+    );
+  }
+
+  return reply.send({ message: 'Количество обновлено' });
 });
 
 // Удалить товар из корзины
-app.delete('/cart/:id', async (req, reply) => {
-  const { id } = req.params as { id: string };
-  const index = cart.findIndex((c) => c.productId === id);
-  if (index === -1) return reply.code(404).send({ message: 'Product not in cart' });
+app.delete('/cart/:productId', { preValidation: [(app as any).authenticate] }, async (req: any, reply) => {
+  const userId = req.user.userId;
+  const { productId } = req.params as { productId: string };
 
-  cart.splice(index, 1);
-  return { message: 'Product removed from cart', cart };
+  await pool.query('DELETE FROM cart WHERE user_id = $1 AND product_id = $2', [userId, productId]);
+
+  return reply.send({ message: 'Товар удален' });
+});
+
+interface CheckoutItem {
+  productId: string;
+  quantity: number;
+  price: number;
+}
+
+interface CheckoutBody {
+  items: CheckoutItem[];
+  total: number;
+  name: string;
+  phone: string;
+  address: string;
+  comment?: string;
+  cardNumber?: string; // для истории
+}
+
+// Создать заказ
+app.post('/orders', { preValidation: [(app as any).authenticate] }, async (req: any, reply) => {
+  const userId = req.user.userId;
+
+  try {
+    // 1. Получаем товары из корзины
+    const { rows: cartItems } = await pool.query(
+      'SELECT product_id, quantity FROM cart WHERE user_id = $1',
+      [userId]
+    );
+
+    if (!cartItems.length) {
+      return reply.code(400).send({ message: 'Корзина пуста' });
+    }
+
+    // 2. Считаем total (цена из фронта)
+    const total = req.body.total || 0;
+
+    // 3. Генерируем код заказа
+    const code = Math.random().toString(36).slice(2, 10).toUpperCase();
+
+    // 4. Вставляем заказ
+    const { rows: orderRows } = await pool.query(
+      'INSERT INTO orders (user_id, code, total) VALUES ($1, $2, $3) RETURNING id, code, total',
+      [userId, code, total]
+    );
+    const order = orderRows[0];
+
+    // 5. Можно удалить корзину
+    await pool.query('DELETE FROM cart WHERE user_id = $1', [userId]);
+
+    return { orderId: order.id, code: order.code, total: order.total, message: 'Заказ создан' };
+  } catch (err) {
+    app.log.error(err);
+    return reply.code(500).send({ message: 'Ошибка при создании заказа' });
+  }
+});
+
+// Получить список заказов пользователя
+app.get('/orders', { preValidation: [(app as any).authenticate] }, async (req: any, reply) => {
+  const userId = req.user.userId;
+
+  try {
+    const { rows: orders } = await pool.query(
+      'SELECT id, code, total, created_at FROM orders WHERE user_id = $1 ORDER BY created_at DESC',
+      [userId]
+    );
+
+    // Если у тебя пока нет order_items или не нужно их показывать, просто возвращаем эти данные
+    const formattedOrders = orders.map(o => ({
+      orderId: o.id.toString(),
+      code: o.code || o.id.toString(), // если код ещё не генерируется, используем id
+      total: o.total,
+      created_at: o.created_at,
+    }));
+
+    return formattedOrders;
+  } catch (err) {
+    app.log.error(err);
+    return reply.code(500).send({ message: 'Ошибка при получении заказов' });
+  }
 });
 
 // --- СТАРТ СЕРВЕРА ---
