@@ -6,8 +6,7 @@
     "brandId": "bosch",
     "subcategoryId": "20",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/1.jpg"
     ],
     "characteristics": [
       {
@@ -33,8 +32,7 @@
     "brandId": "makita",
     "subcategoryId": "20",
     "images": [
-      "/images/products/gnida1.png",
-      "/images/products/gnida.png"
+      "/images/products/2.jpg"
     ],
     "characteristics": [
       {
@@ -60,8 +58,8 @@
     "brandId": "dewalt",
     "subcategoryId": "20",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/3.jpg",
+      "/images/products/4.jpg"
     ],
     "characteristics": [
       {
@@ -87,8 +85,7 @@
     "brandId": "bosch",
     "subcategoryId": "21",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/5.jpg"
     ],
     "characteristics": [
       {
@@ -114,8 +111,7 @@
     "brandId": "makita",
     "subcategoryId": "21",
     "images": [
-      "/images/products/gnida1.png",
-      "/images/products/gnida.png"
+      "/images/products/6.jpg"
     ],
     "characteristics": [
       {
@@ -141,8 +137,7 @@
     "brandId": "dewalt",
     "subcategoryId": "21",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/7.jpg"
     ],
     "characteristics": [
       {
@@ -168,8 +163,7 @@
     "brandId": "bosch",
     "subcategoryId": "22",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/8.jpg"
     ],
     "characteristics": [
       {
@@ -195,8 +189,7 @@
     "brandId": "makita",
     "subcategoryId": "22",
     "images": [
-      "/images/products/gnida1.png",
-      "/images/products/gnida.png"
+      "/images/products/9.jpg"
     ],
     "characteristics": [
       {
@@ -222,8 +215,7 @@
     "brandId": "dewalt",
     "subcategoryId": "22",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/10.jpg"
     ],
     "characteristics": [
       {
@@ -249,7 +241,7 @@
     "brandId": "stanley",
     "subcategoryId": "30",
     "images": [
-      "/images/products/gnida.png"
+      "/images/products/11.png"
     ],
     "characteristics": [
       {
@@ -271,7 +263,7 @@
     "brandId": "metabo",
     "subcategoryId": "30",
     "images": [
-      "/images/products/gnida1.png"
+      "/images/products/none.png"
     ],
     "characteristics": [
       {
@@ -293,8 +285,7 @@
     "brandId": "bosch",
     "subcategoryId": "30",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/12.jpg"
     ],
     "characteristics": [
       {
@@ -316,7 +307,7 @@
     "brandId": "stanley",
     "subcategoryId": "31",
     "images": [
-      "/images/products/gnida.png"
+      "/images/products/13.jpg"
     ],
     "characteristics": [
       {
@@ -338,7 +329,7 @@
     "brandId": "metabo",
     "subcategoryId": "31",
     "images": [
-      "/images/products/gnida1.png"
+      "/images/products/14.jpg"
     ],
     "characteristics": [
       {
@@ -360,8 +351,7 @@
     "brandId": "bosch",
     "subcategoryId": "31",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/15.jpg"
     ],
     "characteristics": [
       {
@@ -383,7 +373,7 @@
     "brandId": "stanley",
     "subcategoryId": "32",
     "images": [
-      "/images/products/gnida.png"
+      "/images/products/16.jpg"
     ],
     "characteristics": [
       {
@@ -405,7 +395,7 @@
     "brandId": "metabo",
     "subcategoryId": "32",
     "images": [
-      "/images/products/gnida1.png"
+      "/images/products/17.jpg"
     ],
     "characteristics": [
       {
@@ -427,8 +417,7 @@
     "brandId": "bosch",
     "subcategoryId": "32",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/18.jpg"
     ],
     "characteristics": [
       {
@@ -450,8 +439,7 @@
     "brandId": "bosch",
     "subcategoryId": "40",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/19.jpg"
     ],
     "characteristics": [
       {
@@ -477,8 +465,7 @@
     "brandId": "makita",
     "subcategoryId": "40",
     "images": [
-      "/images/products/gnida1.png",
-      "/images/products/gnida.png"
+      "/images/products/20.jpg"
     ],
     "characteristics": [
       {
@@ -504,8 +491,7 @@
     "brandId": "dewalt",
     "subcategoryId": "40",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/21.jpg"
     ],
     "characteristics": [
       {
@@ -531,8 +517,7 @@
     "brandId": "bosch",
     "subcategoryId": "41",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/22.jpg"
     ],
     "characteristics": [
       {
@@ -558,8 +543,7 @@
     "brandId": "makita",
     "subcategoryId": "41",
     "images": [
-      "/images/products/gnida1.png",
-      "/images/products/gnida.png"
+      "/images/products/23.jpg"
     ],
     "characteristics": [
       {
@@ -585,8 +569,7 @@
     "brandId": "dewalt",
     "subcategoryId": "41",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/24.jpg"
     ],
     "characteristics": [
       {
@@ -612,8 +595,7 @@
     "brandId": "bosch",
     "subcategoryId": "42",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/25.jpg"
     ],
     "characteristics": [
       {
@@ -639,8 +621,7 @@
     "brandId": "makita",
     "subcategoryId": "42",
     "images": [
-      "/images/products/gnida1.png",
-      "/images/products/gnida.png"
+      "/images/products/26.jpg"
     ],
     "characteristics": [
       {
@@ -666,8 +647,7 @@
     "brandId": "dewalt",
     "subcategoryId": "42",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/27.jpg"
     ],
     "characteristics": [
       {
@@ -693,8 +673,7 @@
     "brandId": "woodstyle",
     "subcategoryId": "50",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/28.jpg"
     ],
     "characteristics": [
       {
@@ -720,8 +699,7 @@
     "brandId": "metabo",
     "subcategoryId": "50",
     "images": [
-      "/images/products/gnida1.png",
-      "/images/products/gnida.png"
+      "/images/products/29.jpg"
     ],
     "characteristics": [
       {
@@ -747,8 +725,7 @@
     "brandId": "bosch",
     "subcategoryId": "50",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/30.jpg"
     ],
     "characteristics": [
       {
@@ -774,7 +751,7 @@
     "brandId": "woodstyle",
     "subcategoryId": "51",
     "images": [
-      "/images/products/gnida.png"
+      "/images/products/31.jpg"
     ],
     "characteristics": [
       {
@@ -800,7 +777,7 @@
     "brandId": "metabo",
     "subcategoryId": "51",
     "images": [
-      "/images/products/gnida1.png"
+      "/images/products/32.jpg"
     ],
     "characteristics": [
       {
@@ -826,8 +803,7 @@
     "brandId": "bosch",
     "subcategoryId": "60",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/33.jpg"
     ],
     "characteristics": [
       {
@@ -853,8 +829,7 @@
     "brandId": "metabo",
     "subcategoryId": "60",
     "images": [
-      "/images/products/gnida1.png",
-      "/images/products/gnida.png"
+      "/images/products/34.jpg"
     ],
     "characteristics": [
       {
@@ -880,7 +855,7 @@
     "brandId": "plumbex",
     "subcategoryId": "61",
     "images": [
-      "/images/products/gnida.png"
+      "/images/products/35.jpg"
     ],
     "characteristics": [
       {
@@ -902,7 +877,7 @@
     "brandId": "plumbex",
     "subcategoryId": "61",
     "images": [
-      "/images/products/gnida1.png"
+      "/images/products/36.jpg"
     ],
     "characteristics": [
       {
@@ -924,8 +899,7 @@
     "brandId": "bosch",
     "subcategoryId": "60",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/37.jpg"
     ],
     "characteristics": [
       {
@@ -947,8 +921,7 @@
     "brandId": "metabo",
     "subcategoryId": "60",
     "images": [
-      "/images/products/gnida1.png",
-      "/images/products/gnida.png"
+      "/images/products/38.jpg"
     ],
     "characteristics": [
       {
@@ -970,8 +943,7 @@
     "brandId": "bosch",
     "subcategoryId": "23",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/39.jpg"
     ],
     "characteristics": [
       {
@@ -997,8 +969,7 @@
     "brandId": "makita",
     "subcategoryId": "23",
     "images": [
-      "/images/products/gnida1.png",
-      "/images/products/gnida.png"
+      "/images/products/40.jpg"
     ],
     "characteristics": [
       {
@@ -1024,8 +995,7 @@
     "brandId": "dewalt",
     "subcategoryId": "23",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/41.jpg"
     ],
     "characteristics": [
       {
@@ -1051,8 +1021,7 @@
     "brandId": "bosch",
     "subcategoryId": "24",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/42.jpg"
     ],
     "characteristics": [
       {
@@ -1078,8 +1047,7 @@
     "brandId": "makita",
     "subcategoryId": "24",
     "images": [
-      "/images/products/gnida1.png",
-      "/images/products/gnida.png"
+      "/images/products/43.jpg"
     ],
     "characteristics": [
       {
@@ -1105,8 +1073,7 @@
     "brandId": "dewalt",
     "subcategoryId": "22",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/44.jpg"
     ],
     "characteristics": [
       {
@@ -1132,8 +1099,7 @@
     "brandId": "dewalt",
     "subcategoryId": "22",
     "images": [
-      "/images/products/gnida.png",
-      "/images/products/gnida1.png"
+      "/images/products/defoult.png"
     ],
     "characteristics": [
       {
