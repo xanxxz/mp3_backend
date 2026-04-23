@@ -10,7 +10,7 @@ const app = Fastify({ logger: true });
 
 // CORS
 app.register(cors, {
-  origin: 'http://localhost:5173', // фронт
+  origin: 'http://5.23.52.174:5173', // фронт
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // OPTIONS добавится автоматически
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, 
