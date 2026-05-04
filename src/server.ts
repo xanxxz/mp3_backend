@@ -85,11 +85,32 @@ app.get<{
 // --- ДОБАВЛЕНИЕ ТОВАРА ---
 app.post('/admin/products', { preValidation: [(app as any).adminOnly] }, async (req: any, reply) => {
   try {
-    const newProduct = req.body; // должен соответствовать ProductData
+    const newProduct = req.body;
+
     const products = JSON.parse(fs.readFileSync(productsFile, 'utf-8'));
-    products.push(newProduct);
+
+    // 👉 ищем последний id
+    const lastId = products.length
+      ? Math.max(
+          ...products.map((p: any) => {
+            const num = parseInt((p.id || '').replace('p', ''));
+            return isNaN(num) ? 0 : num;
+          })
+        )
+      : 0;
+
+    const nextId = `p${lastId + 1}`;
+
+    const productWithId = {
+      ...newProduct,
+      id: nextId,
+    };
+
+    products.push(productWithId);
+
     fs.writeFileSync(productsFile, JSON.stringify(products, null, 2));
-    return reply.code(201).send(newProduct);
+
+    return reply.code(201).send(productWithId);
   } catch (err) {
     app.log.error(err);
     return reply.code(500).send({ message: 'Ошибка при добавлении товара' });
