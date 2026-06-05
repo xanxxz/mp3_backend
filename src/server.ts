@@ -10,7 +10,10 @@ const app = Fastify({ logger: true });
 
 // CORS
 app.register(cors, {
-  origin: 'http://5.23.52.174:5173', // фронт
+  origin: [
+    'https://stroymarket64.ru',
+    'http://localhost:5173'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // OPTIONS добавится автоматически
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, 
