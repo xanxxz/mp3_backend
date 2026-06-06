@@ -136,6 +136,86 @@ app.post('/admin/categories', { preValidation: [(app as any).adminOnly] }, async
   }
 });
 
+
+app.get(
+  '/admin/orders',
+  { preValidation: [(app as any).authenticate] },
+  async (req: any, reply) => {
+    if (req.user.role !== 'admin') {
+      return reply.code(403).send({ message: 'Доступ запрещён' });
+    }
+
+    const { rows } = await pool.query(`
+      SELECT
+        o.id,
+        o.code,
+        o.total,
+        o.created_at,
+        u.id as user_id,
+        u.name,
+        u.email,
+        u.phone
+      FROM orders o
+      LEFT JOIN users u ON u.id = o.user_id
+      ORDER BY o.created_at DESC
+    `);
+
+    return rows;
+  }
+);
+
+app.get(
+  '/admin/orders',
+  { preValidation: [(app as any).authenticate] },
+  async (req: any, reply) => {
+    if (req.user.role !== 'admin') {
+      return reply.code(403).send({ message: 'Доступ запрещён' });
+    }
+
+    const { rows } = await pool.query(`
+      SELECT
+        o.id,
+        o.code,
+        o.total,
+        o.created_at,
+        u.id as user_id,
+        u.name,
+        u.email,
+        u.phone
+      FROM orders o
+      LEFT JOIN users u ON u.id = o.user_id
+      ORDER BY o.created_at DESC
+    `);
+
+    return rows;
+  }
+);
+
+app.get(
+  '/admin/users',
+  { preValidation: [(app as any).authenticate] },
+  async (req: any, reply) => {
+    if (req.user.role !== 'admin') {
+      return reply.code(403).send({ message: 'Доступ запрещён' });
+    }
+
+    const { rows } = await pool.query(`
+      SELECT
+        id,
+        email,
+        phone,
+        name,
+        region,
+        role,
+        created_at
+      FROM users
+      ORDER BY created_at DESC
+    `);
+
+    return rows;
+  }
+);
+
 // --- РЕГИСТРАЦИЯ ---
 app.post('/register', async (req, reply) => {
   const { email, phone, name, region, password } = req.body as {
