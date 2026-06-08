@@ -85,6 +85,51 @@ app.get<{
   }
 });
 
+
+app.delete(
+  '/admin/products/:id',
+  { preValidation: [(app as any).adminOnly] },
+  async (req: any, reply) => {
+    try {
+      const { id } = req.params;
+
+      const products = JSON.parse(
+        fs.readFileSync(productsFile, 'utf-8')
+      );
+
+      const productIndex = products.findIndex(
+        (p: any) => p.id === id
+      );
+
+      if (productIndex === -1) {
+        return reply.code(404).send({
+          message: 'Товар не найден',
+        });
+      }
+
+      const deletedProduct = products[productIndex];
+
+      products.splice(productIndex, 1);
+
+      fs.writeFileSync(
+        productsFile,
+        JSON.stringify(products, null, 2)
+      );
+
+      return reply.send({
+        message: 'Товар удален',
+        product: deletedProduct,
+      });
+    } catch (err) {
+      app.log.error(err);
+
+      return reply.code(500).send({
+        message: 'Ошибка при удалении товара',
+      });
+    }
+  }
+);
+
 // --- ДОБАВЛЕНИЕ ТОВАРА ---
 app.post('/admin/products', { preValidation: [(app as any).adminOnly] }, async (req: any, reply) => {
   try {
